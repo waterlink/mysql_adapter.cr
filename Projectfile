@@ -1,2 +1,4 @@
 deps do
+  github "waterlink/active_record.cr"
+  github "waterlink/crystal-mysql"
 end
