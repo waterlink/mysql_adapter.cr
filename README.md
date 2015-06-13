@@ -26,6 +26,18 @@ class Person < ActiveRecord::Model
 end
 ```
 
+## Development
+
+After cloning run `crystal deps` or `crystal deps update`.
+
+Just use normal TDD cycle. To run tests use:
+
+```
+./bin/test
+```
+
+This will run unit test in `spec/` and integration spec in `integration/`.
+
 ## Contributing
 
 1. Fork it ( https://github.com/waterlink/mysql_adapter.cr/fork )

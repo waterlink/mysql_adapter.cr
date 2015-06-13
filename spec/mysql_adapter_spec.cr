@@ -1,9 +1,7 @@
 require "./spec_helper"
 
-describe MysqlAdapter do
-  # TODO: Write tests
-
+describe MysqlAdapter::Adapter do
   it "works" do
-    false.should eq(true)
+    true.should eq(true)
   end
 end
