@@ -2,6 +2,11 @@
 
 Mysql adapter for [active_record.cr](https://github.com/waterlink/active_record.cr). Uses [crystal-mysql library](https://github.com/waterlink/crystal-mysql)
 
+## TODO
+
+- [ ] Implement with some default connection config
+- [ ] Figure out a way to provide connection pool
+
 ## Installation
 
 Add it to `Projectfile`
