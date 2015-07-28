@@ -32,7 +32,8 @@ module MysqlAdapter
 
       MySQL::Query.new(query, params).run(connection)
 
-      conn.query(%{SELECT #{primary_field} FROM #{table_name} ORDER #{primary_field} DESC LIMIT 1})[0][0]
+      result = connection.query(%{SELECT #{primary_field} FROM #{table_name} ORDER #{primary_field} DESC LIMIT 1})
+      result.not_nil![0].not_nil![0]
     end
 
     def read(id)
