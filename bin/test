@@ -4,4 +4,4 @@ set -e
 
 crystal spec
 crystal build integration/integration_spec.cr -o integration/integration_spec -D active_record_adapter
-./integration/integration_spec
+./integration/integration_spec --fail-fast

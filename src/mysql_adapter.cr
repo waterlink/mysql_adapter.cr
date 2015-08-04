@@ -32,32 +32,52 @@ module MysqlAdapter
 
       MySQL::Query.new(query, params).run(connection)
 
-      result = connection.query(%{SELECT #{primary_field} FROM #{table_name} ORDER #{primary_field} DESC LIMIT 1})
+      result = connection.query(%{SELECT #{primary_field} FROM #{table_name} ORDER BY #{primary_field} DESC LIMIT 1})
       result.not_nil![0].not_nil![0]
     end
 
     def read(id)
-      adapter.read(id)
+      # FIXME should be an argument from active_record.cr
+      primary_field = "id"
+      field_names = ["id", "last_name", "first_name", "number_of_dependents"]
+
+      if id.is_a?(Int)
+        query = "SELECT #{field_names.join(", ")} FROM #{table_name} WHERE #{primary_field} = :primary_key LIMIT 1"
+        result = MySQL::Query.new(query, { "primary_key" => id }).run(connection)
+
+        fields = {} of String => ActiveRecord::SupportedType
+        field_names.each_with_index do |name, index|
+          next unless result
+          value = result[0][index]
+          if value.is_a?(ActiveRecord::SupportedType)
+            fields[name] = value
+          else
+            puts "Encountered unsupported type: #{typeof(value)}"
+          end
+        end
+
+        fields
+      else
+        fail "Id is null"
+      end
     end
 
     def index
-      adapter.index
+      [] of ActiveRecord::Fields
     end
 
     def where(query_hash)
-      adapter.where(query_hash)
+      index
     end
 
     def where(query, params)
-      adapter.where(query, params)
+      index
     end
 
     def update(id, fields)
-      adapter.update(id, fields)
     end
 
     def delete(id)
-      adapter.delete(id)
     end
   end
 end
