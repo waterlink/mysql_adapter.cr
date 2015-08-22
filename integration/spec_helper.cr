@@ -4,5 +4,13 @@ require "active_record/null_adapter"
 
 ActiveRecord::Registry.register_adapter("null", MysqlAdapter::Adapter)
 
+Spec.before_each do
+  MysqlAdapter::Adapter._reset_do_this_only_in_specs_78367c96affaacd7
+end
+
+Spec.after_each do
+  MysqlAdapter::Adapter._reset_do_this_only_in_specs_78367c96affaacd7
+end
+
 require "../.deps/waterlink-active_record.cr/spec/fake_adapter"
 require "../.deps/waterlink-active_record.cr/spec/active_record_spec"
