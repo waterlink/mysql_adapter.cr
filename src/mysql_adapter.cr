@@ -7,18 +7,17 @@ module MysqlAdapter
   class Adapter < ActiveRecord::Adapter
     query_generator ActiveRecord::Sql::QueryGenerator.new
 
-    def self.build(table_name, register = true)
-      new(table_name, register)
+    def self.build(table_name, primary_field, fields, register = true)
+      new(table_name, primary_field, fields, register)
     end
 
-    getter connection
-    getter table_name
+    getter connection, table_name, primary_field, fields
 
-    def initialize(@table_name, register = true)
+    def initialize(@table_name, @primary_field, @fields, register = true)
       @connection = MySQL.connect("127.0.0.1", "crystal_mysql", "", "crystal_mysql_test", 3306_u16, nil)
     end
 
-    def create(fields, primary_field)
+    def create(fields)
       field_names = fields.keys.map { |name| name }.join(", ")
       field_values = fields.keys.map { |name| ":__value__#{name}" }.join(", ")
 
@@ -26,8 +25,10 @@ module MysqlAdapter
 
       params = {} of String => MySQL::Types::SqlType
       fields.each do |name, value|
-        params["__name__#{name}"] = name
-        params["__value__#{name}"] = value
+        unless value.null?
+          params["__name__#{name}"] = name
+          params["__value__#{name}"] = value.not_null!
+        end
       end
 
       MySQL::Query.new(query, params).run(connection)
@@ -36,30 +37,22 @@ module MysqlAdapter
       result.not_nil![0].not_nil![0]
     end
 
-    def read(id)
-      # FIXME should be an argument from active_record.cr
-      primary_field = "id"
-      field_names = ["id", "last_name", "first_name", "number_of_dependents"]
+    def find(id)
+      query = "SELECT #{fields.join(", ")} FROM #{table_name} WHERE #{primary_field} = :primary_key LIMIT 1"
+      result = MySQL::Query.new(query, { "primary_key" => id.not_null! }).run(connection)
 
-      if id.is_a?(Int)
-        query = "SELECT #{field_names.join(", ")} FROM #{table_name} WHERE #{primary_field} = :primary_key LIMIT 1"
-        result = MySQL::Query.new(query, { "primary_key" => id }).run(connection)
-
-        fields = {} of String => ActiveRecord::SupportedType
-        field_names.each_with_index do |name, index|
-          next unless result
-          value = result[0][index]
-          if value.is_a?(ActiveRecord::SupportedType)
-            fields[name] = value
-          else
-            puts "Encountered unsupported type: #{typeof(value)}"
-          end
+      fields = {} of String => ActiveRecord::SupportedType
+      self.fields.each_with_index do |name, index|
+        next unless result
+        value = result[0][index]
+        if value.is_a?(ActiveRecord::SupportedType)
+          fields[name] = value
+        elsif !value.is_a?(Nil)
+          puts "Encountered unsupported type: #{value.class}, of type: #{typeof(value)}"
         end
-
-        fields
-      else
-        fail "Id is null"
       end
+
+      fields
     end
 
     def index
