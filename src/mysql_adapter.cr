@@ -43,9 +43,14 @@ module MysqlAdapter
       end
 
       MySQL::Query.new(query, params).run(connection)
-
-      result = connection.query(%{SELECT #{primary_field} FROM #{table_name} ORDER BY #{primary_field} DESC LIMIT 1})
-      result.not_nil![0].not_nil![0]
+      # FIXME: If not doing this cast here:
+      #
+      #instantiating 'Hash(String, String | Int8 | Int32 | Int16 | Int64 | UInt8 | UInt32 | UInt16 | UInt64 | Int::Null | String::Null)#[]=(String, (Int32 | UInt32 | Int::Null))'
+      #in /opt/crystal/src/hash.cr:55: instantiating 'insert_in_bucket(Int32, String, (Int32 | UInt32 | Int::Null))'
+      #
+      #    entry = insert_in_bucket index, key, value
+      #
+      return connection.insert_id.to_i64
     end
 
     def find(id)
