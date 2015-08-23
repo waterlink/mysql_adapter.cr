@@ -5,7 +5,9 @@ require "mysql"
 
 module MysqlAdapter
   class Adapter < ActiveRecord::Adapter
-    query_generator ActiveRecord::Sql::QueryGenerator.new
+    include ActiveRecord::CriteriaHelper
+
+    query_generator ::ActiveRecord::Sql::QueryGenerator.new
 
     def self.build(table_name, primary_field, fields, register = true)
       new(table_name, primary_field, fields, register)
@@ -47,29 +49,68 @@ module MysqlAdapter
     end
 
     def find(id)
-      query = "SELECT #{fields.join(", ")} FROM #{table_name} WHERE #{primary_field} = :primary_key LIMIT 1"
-      result = MySQL::Query.new(query, { "primary_key" => id.not_null! }).run(connection)
+      query = "SELECT #{fields.join(", ")} FROM #{table_name} WHERE #{primary_field} = :__primary_key LIMIT 1"
+      result = MySQL::Query.new(query, { "__primary_key" => id.not_null! }).run(connection)
+
+      return nil if !result || result.not_nil!.count == 0
+
       extract_fields(result.not_nil![0])
     end
 
     def index
       query = "SELECT #{fields.join(", ")} FROM #{table_name}"
       result = connection.query(query)
-      result.not_nil!.map { |row| extract_fields(row) }
+      extract_rows(result)
     end
 
-    def where(query_hash)
-      index
+    def where(query_hash : Hash)
+      q = nil
+      query_hash.each do |key, value|
+        if q
+          q = q.& criteria(key) == value
+        else
+          q = criteria(key) == value
+        end
+      end
+
+      where(q)
     end
 
-    def where(query, params)
-      index
+    def where(query : ActiveRecord::Query)
+      q = self.class.generate_query(query).not_nil!
+      _where(q.query, q.params)
+    end
+
+    def where(query : Nil)
+      [] of ActiveRecord::Fields
+    end
+
+    private def _where(query, params)
+      mysql_query = "SELECT #{fields.join(", ")} FROM #{table_name} WHERE #{query}"
+      mysql_params = mysqlify_params(params)
+
+      result = MySQL::Query.new(mysql_query, mysql_params).run(connection)
+      extract_rows(result)
     end
 
     def update(id, fields)
+      fields.delete(primary_field)
+
+      expressions = fields.map { |name, value| "#{name}=:#{name}" }
+      mysql_params = mysqlify_params(fields.merge({"__primary_key" => id.not_null!}))
+      mysql_query = "UPDATE #{table_name} SET #{expressions.join(", ")} WHERE #{primary_field} = :__primary_key"
+
+      MySQL::Query.new(mysql_query, mysql_params).run(connection)
     end
 
     def delete(id)
+      query = "DELETE FROM #{table_name} WHERE #{primary_field} = :__primary_key"
+      params = {"__primary_key" => id.not_null!}
+      MySQL::Query.new(query, params).run(connection)
+    end
+
+    def extract_rows(result)
+      result.not_nil!.map { |row| extract_fields(row) }
     end
 
     def extract_fields(row)
@@ -85,6 +126,20 @@ module MysqlAdapter
       end
 
       fields
+    end
+
+    def mysqlify_params(params)
+      result = {} of String => MySQL::Types::SqlType
+
+      params.each do |key, value|
+        if value.null?
+          result[key] = nil
+        else
+          result[key] = value.not_null!
+        end
+      end
+
+      result
     end
 
     def self._reset_do_this_only_in_specs_78367c96affaacd7
