@@ -5,7 +5,7 @@ Mysql adapter for [active_record.cr](https://github.com/waterlink/active_record.
 ## TODO
 
 - [x] Implement with some default connection config
-- [ ] Fix segfaults from upstrem lib (`crystal-mysql`)
+- [x] Fix segfaults from upstrem lib (`crystal-mysql`)
 - [ ] Figure out a way to provide connection pool
 
 ## Installation
