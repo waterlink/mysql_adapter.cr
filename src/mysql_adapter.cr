@@ -24,7 +24,7 @@ module MysqlAdapter
     getter connection, table_name, primary_field, fields
 
     def initialize(@table_name, @primary_field, @fields, register = true)
-      @connection = MySQL.connect("127.0.0.1", "crystal_mysql", "", "crystal_mysql_test", 3306_u16, nil)
+      @connection = MySQL.connect(mysql_host, mysql_user, mysql_password, mysql_database, mysql_port, nil)
       self.class.register(self)
     end
 
@@ -145,6 +145,26 @@ module MysqlAdapter
       end
 
       result
+    end
+
+    def mysql_host
+      ENV["MYSQL_HOST"]? || "127.0.0.1"
+    end
+
+    def mysql_user
+      ENV["MYSQL_USER"]? || "crystal_mysql"
+    end
+
+    def mysql_password
+      ENV["MYSQL_PASSWORD"]? || ""
+    end
+
+    def mysql_database
+      ENV["MYSQL_DATABASE"]? || "crystal_mysql_test"
+    end
+
+    def mysql_port
+      (ENV["MYSQL_PORT"]? || 3306).to_u16
     end
 
     def self._reset_do_this_only_in_specs_78367c96affaacd7
