@@ -25,6 +25,7 @@ module MysqlAdapter
 
     def initialize(@table_name, @primary_field, @fields, register = true)
       @connection = MySQL.connect(mysql_host, mysql_user, mysql_password, mysql_database, mysql_port, nil)
+      connection.set_option(LibMySQL::MySQLOption::MYSQL_OPT_RECONNECT, true)
       self.class.register(self)
     end
 
