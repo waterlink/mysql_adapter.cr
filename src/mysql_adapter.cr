@@ -63,7 +63,7 @@ module MysqlAdapter
       extract_fields(result.not_nil![0])
     end
 
-    def index
+    def all
       query = "SELECT #{fields.join(", ")} FROM #{table_name}"
       result = connection.query(query)
       extract_rows(result)
