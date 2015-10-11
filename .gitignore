@@ -2,10 +2,6 @@
 /libs/
 /.crystal/
 /doc/
-
-
-# Libraries don't need dependency lock
-# Dependencies will be locked in application that uses them
-/.deps.lock
-
 /integration/integration_spec
+/shard.lock
+/.shards

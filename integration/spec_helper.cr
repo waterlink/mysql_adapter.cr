@@ -12,5 +12,5 @@ Spec.after_each do
   MysqlAdapter::Adapter._reset_do_this_only_in_specs_78367c96affaacd7
 end
 
-require "../.deps/waterlink-active_record.cr/spec/fake_adapter"
-require "../.deps/waterlink-active_record.cr/spec/active_record_spec"
+require "../modules/active_record/spec/fake_adapter"
+require "../modules/active_record/spec/active_record_spec"

@@ -58,7 +58,7 @@ module MysqlAdapter
       query = "SELECT #{fields.join(", ")} FROM #{table_name} WHERE #{primary_field} = :__primary_key LIMIT 1"
       result = MySQL::Query.new(query, { "__primary_key" => id.not_null! }).run(connection)
 
-      return nil if !result || result.not_nil!.count == 0
+      return nil if !result || result.not_nil!.size == 0
 
       extract_fields(result.not_nil![0])
     end

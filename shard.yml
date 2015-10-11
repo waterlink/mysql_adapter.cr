@@ -1,0 +1,13 @@
+name: mysql_adapter
+version: 0.0.1
+
+authors:
+- Oleksii Fedorov <waterlink000@gmail.com>
+
+license: MIT
+
+dependencies:
+  active_record:
+    github: waterlink/active_record.cr
+  mysql:
+    github: waterlink/crystal-mysql
