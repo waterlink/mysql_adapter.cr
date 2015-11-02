@@ -54,7 +54,7 @@ module MysqlAdapter
       return connection.insert_id.to_i64
     end
 
-    def find(id)
+    def get(id)
       query = "SELECT #{fields.join(", ")} FROM #{table_name} WHERE #{primary_field} = :__primary_key LIMIT 1"
       result = MySQL::Query.new(query, { "__primary_key" => id.not_null! }).run(connection)
 
