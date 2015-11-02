@@ -10,14 +10,13 @@ Mysql adapter for [active_record.cr](https://github.com/waterlink/active_record.
 
 ## Installation
 
-Add it to `Projectfile`
+Add it to your `shard.yml`
 
-```crystal
-deps do
-  github "waterlink/active_record.cr"
-  github "waterlink/crystal-mysql"
-  github "waterlink/mysql_adapter.cr"
-end
+```yml
+dependencies:
+  mysql_adapter:
+    github: waterlink/mysql_adapter.cr
+    version: 0.0.2
 ```
 
 ## Usage
