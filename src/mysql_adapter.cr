@@ -176,4 +176,6 @@ module MysqlAdapter
       connection.query "DELETE FROM #{table_name}"
     end
   end
+
+  ActiveRecord::Registry.register_adapter("mysql", Adapter)
 end
