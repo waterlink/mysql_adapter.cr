@@ -9,5 +9,7 @@ license: MIT
 dependencies:
   active_record:
     github: waterlink/active_record.cr
+    version: 0.1.1
   mysql:
     github: waterlink/crystal-mysql
+    version: 0.2.1

@@ -12,4 +12,4 @@ mysql $PARAMS -e "use crystal_mysql_test; drop table if exists people; create ta
 
 mysql $PARAMS -e "use crystal_mysql_test; drop table if exists something_else; create table something_else( id int not null auto_increment primary key, name varchar(50) )"
 
-mysql $PARAMS -e "use crystal_mysql_test; drop table if exists posts; create table posts( id int not null auto_increment primary key, title varchar(50), content varchar(50) )"
+mysql $PARAMS -e "use crystal_mysql_test; drop table if exists posts; create table posts( id int not null auto_increment primary key, title varchar(50), content varchar(50), created_at datetime )"
