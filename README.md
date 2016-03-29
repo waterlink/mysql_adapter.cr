@@ -31,6 +31,33 @@ class Person < ActiveRecord::Model
 end
 ```
 
+### Connection configuration
+
+Currently, connection can be configured through environment variables:
+
+```bash
+$ export MYSQL_HOST=localhost
+$ export MYSQL_PORT=3306
+$ export MYSQL_USER=test
+$ export MYSQL_PASSWORD=welcome
+$ export MYSQL_DATABASE=test_db
+
+# And run your code
+$ crystal run src/your_code.cr
+```
+
+Alternative way of doing that is to set these variables programmatically before
+using `mysql_adapter` or `active_record`:
+
+```crystal
+# You are free to read these values from config file for instance.
+ENV["MYSQL_HOST"] = "localhost"
+ENV["MYSQL_PORT"] = 3306
+ENV["MYSQL_USER"] = "test"
+ENV["MYSQL_PASSWORD"] = "welcome"
+ENV["MYSQL_DATABASE"] = "test_db"
+```
+
 ## Development
 
 After cloning run `crystal deps` or `crystal deps update`.
