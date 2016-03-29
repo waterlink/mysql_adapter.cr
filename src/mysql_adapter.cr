@@ -39,7 +39,7 @@ module MysqlAdapter
       fields.each do |name, value|
         unless value.null?
           params["__name__#{name}"] = name
-          params["__value__#{name}"] = value.not_null!
+          params["__value__#{name}"] = to_mysql_type(value.not_null!)
         end
       end
 
@@ -56,7 +56,10 @@ module MysqlAdapter
 
     def get(id)
       query = "SELECT #{fields.join(", ")} FROM #{table_name} WHERE #{primary_field} = :__primary_key LIMIT 1"
-      result = MySQL::Query.new(query, { "__primary_key" => id.not_null! }).run(connection)
+      result = MySQL::Query.new(
+        query,
+        { "__primary_key" => to_mysql_type(id.not_null!) }
+      ).run(connection)
 
       return nil if !result || result.not_nil!.size == 0
 
@@ -111,7 +114,7 @@ module MysqlAdapter
 
     def delete(id)
       query = "DELETE FROM #{table_name} WHERE #{primary_field} = :__primary_key"
-      params = {"__primary_key" => id.not_null!}
+      params = {"__primary_key" => to_mysql_type(id.not_null!)}
       MySQL::Query.new(query, params).run(connection)
     end
 
@@ -141,11 +144,27 @@ module MysqlAdapter
         if value.null?
           result[key] = nil
         else
-          result[key] = value.not_null!
+          result[key] = to_mysql_type(value.not_null!)
         end
       end
 
       result
+    end
+
+    private def to_mysql_type(value : Float32)
+      value.to_f64
+    end
+
+    private def to_mysql_type(value : Int8|Int16|UInt8|UInt16|UInt32)
+      value.to_i32
+    end
+
+    private def to_mysql_type(value : UInt64)
+      value.to_i64
+    end
+
+    private def to_mysql_type(value)
+      value as MySQL::Types::SqlType
     end
 
     def mysql_host
