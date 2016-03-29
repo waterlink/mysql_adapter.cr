@@ -16,7 +16,7 @@ Add it to your `shard.yml`
 dependencies:
   mysql_adapter:
     github: waterlink/mysql_adapter.cr
-    version: 0.2.1
+    version: ~> 0.2
 ```
 
 ## Usage
