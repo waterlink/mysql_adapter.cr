@@ -1,4 +1,3 @@
-require "./mysql_adapter/version"
 require "active_record"
 require "active_record/sql/query_generator"
 require "mysql"
