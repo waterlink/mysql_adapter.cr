@@ -22,7 +22,9 @@ module MysqlAdapter
 
     getter connection, table_name, primary_field, fields
 
-    def initialize(@table_name, @primary_field, @fields, register = true)
+    @connection : MySQL::Connection
+
+    def initialize(@table_name : String, @primary_field : String, @fields : Array(String), register = true)
       @connection = MySQL.connect(mysql_host, mysql_user, mysql_password, mysql_database, mysql_port, nil)
       connection.set_option(LibMySQL::MySQLOption::MYSQL_OPT_RECONNECT, true)
       self.class.register(self)
@@ -84,7 +86,7 @@ module MysqlAdapter
       where(q)
     end
 
-    def where(query : ActiveRecord::Query)
+    def where(query : Query::Query)
       q = self.class.generate_query(query).not_nil!
       _where(q.query, q.params)
     end
