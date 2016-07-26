@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-set -e
+set -euo pipefail
+IFS=$'\n\t'
 
 crystal spec
 crystal build integration/integration_spec.cr -o integration/integration_spec -D active_record_adapter

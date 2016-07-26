@@ -60,7 +60,18 @@ ENV["MYSQL_DATABASE"] = "test_db"
 
 ## Development
 
-After cloning run `crystal deps` or `crystal deps update`.
+After cloning makes scripts executable:
+
+```
+chmod a+x bin/*
+chmod a+x script/setup-test-db.sh
+```
+
+To run initial setup:
+
+```
+./bin/setup
+```
 
 Just use normal TDD cycle. To run tests use:
 
