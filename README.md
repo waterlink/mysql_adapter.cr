@@ -60,14 +60,7 @@ ENV["MYSQL_DATABASE"] = "test_db"
 
 ## Development
 
-After cloning makes scripts executable:
-
-```
-chmod a+x bin/*
-chmod a+x script/setup-test-db.sh
-```
-
-To run initial setup:
+After cloning run initial setup:
 
 ```
 ./bin/setup
