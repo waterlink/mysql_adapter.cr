@@ -73,26 +73,22 @@ module MysqlAdapter
       extract_rows(result)
     end
 
-    def where(query_hash : Hash)
-      q = nil
+    def where(query_hash : Hash(String, ::ActiveRecord::SupportedType))
+      q = ::Query::EmptyQuery.new
       query_hash.each do |key, value|
         if q
-          q = q.& criteria(key) == value
+          q = q.&(criteria(key) == value)
         else
-          q = criteria(key) == value
+          q = (criteria(key) == value)
         end
       end
 
       where(q)
     end
 
-    def where(query : Query::Query)
+    def where(query)
       q = self.class.generate_query(query).not_nil!
       _where(q.query, q.params)
-    end
-
-    def where(query : Nil)
-      [] of ActiveRecord::Fields
     end
 
     private def _where(query, params)
@@ -165,7 +161,7 @@ module MysqlAdapter
     end
 
     private def to_mysql_type(value)
-      value as MySQL::Types::SqlType
+      value.as MySQL::Types::SqlType
     end
 
     def mysql_host

@@ -4,5 +4,6 @@ set -euo pipefail
 IFS=$'\n\t'
 
 git submodule update --init --recursive
-shards install
+shards update
+(cd modules/active_record && shards update)
 ./script/setup-test-db.sh
